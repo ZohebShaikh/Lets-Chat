@@ -17,7 +17,9 @@
         <div class="jumbotron">
             <h1 class="display-4">Send Message</h1>
             <br>
-            <input class="form-control" placeholder="Name">
+            <input id="name" class="form-control" placeholder="Name">
+            <br>
+            <textarea id="message" class="form-control" placeholder="Message"></textarea>
             <br>
             <button id="send" class="btn btn-success">Send</button>
         </div>
@@ -31,15 +33,30 @@
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"
         integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous">
-        </script>
+    </script>
+    <script src="/socket.io/socket.io.js"></script>
     <script>
+        var socket = io() 
         $(() => {
             $("#send").click(()=>{
-                addMessages({name:"Zoheb", message:"Hello Moto!" })
+                var message ={name: $("#name").val(), message:$("#message").val()}
+                postMessage(message)
             })
+            getMessages()
         })
-        function addMessages(message){
+        
+        socket.on('message', addMessage)
+
+        function addMessage(message){
             $("#messages").append(`<h4>${message.name} </h4> <p>${message.message} </p>`)
+        }
+        function getMessages(){
+            $.get('https://nameless-temple-20925.herokuapp.com//messages', (data) => {
+                data.forEach(addMessage);
+            }) 
+        }
+        function postMessage(message){
+            $.post('https://nameless-temple-20925.herokuapp.com//messages', message)
         }
     </script>
 </body>
